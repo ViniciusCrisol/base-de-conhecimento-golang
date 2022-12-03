@@ -1,37 +1,60 @@
 # Acesso ao banco de dados
-A linguagem Go, através da biblioteca nativa `database/sql`, fornece diversos recursos para manipular bases de dados relacionais. Sua API disponibiliza vários métodos que visam abstrair funcionalidades cotidianas. Entretanto, graças a enorme abundância de funções expostas pelo pacote, eventualmente, dúvidas acerca do assunto são geradas. Tendo isso em vista, esse pequeno texto visa esclarecer algumas dessas questões que são tão comuns entre os programadores Go.
+A linguagem Go, através da biblioteca nativa `database/sql`, fornece diversos recursos para manipular bases de dados relacionais. Sua API disponibiliza vários métodos que visam abstrair funcionalidades cotidianas. Entretanto, graças a enorme abundância de funções expostas pelo pacote, eventualmente, dúvidas acerca do assunto são geradas. Tendo isso em vista, esse pequeno texto visa esclarecer algumas dessas questões, as quais são tão comuns entre os programadores Go.
 
 ## Query, Exec e Prepare
 Essa seção visa sanar alguns questionamentos relacionadas ao uso dos métodos de consulta/manipulação mais comuns da API. Com fins ilustrativos, imagens que demonstram as chamadas realizadas por baixo dos panos serão exibidas.
 
 Em suma, o conteúdo do bloco foi traduzido do artigo [Query vs Exec vs Prepare in Go](https://aloksinhanov.medium.com/query-vs-exec-vs-prepare-in-golang-e7c49212c36c "Query vs Exec vs Prepare in Go").
 
+### Query
+O método `Query` deve ser utilizado **apenas** nos casos nos quais deseja-se executar operações que possuam retornos significativos. Ao utilizar o método, o desenvolvedor deve prestar atenção aos seguintes pontos:
+
+1. Após a iteração dos dados ou com a chamada do método `Close()`, presente nas linhas retornadas pela função, a conexão será liberada. Por isso, o retorno do método **nunca** deve ser ignorado.
+2. O total de chamadas ao banco de dados vária conforme o preparo do método. Como pode-se notar nos mapeamentos anexados, ao executar o método sem inferir parâmetros, será realizada apenas uma chamada TCP ao serviço de banco de dados(ignorando a autenticação). Entretanto, ao atribuir parâmetros, serão realizadas 3 chamadas TCP. Nota-se que ao parametrizar uma chamada, por baixo dos panos, será gerado um _prepared statement_.
+
+**Mapeamento QUERY com parâmetros:**
+
+![Mapeamento QUERY com parâmetros](mapeamento-query-com-params.webp "Mapeamento QUERY com parâmetros")
+
+**Mapeamento QUERY sem parâmetros:**
+
+![Mapeamento QUERY sem parâmetros](mapeamento-query-sem-params.webp "Mapeamento QUERY sem parâmetros")
+
+**Sintaxe do comando:**
+```
+rows, err := db.Query("select * from...”, PARÂMETROS)
+```
+
 ### Exec
-O método `Exec` deve ser utilizado **apenas** nos casos nos quais deseja-se executar operações que possuam retornos irrelevantes. Essa característica é geralmente atribuída as chamadas **insert**, **update** e **delete**.
+O método `Exec` deve ser utilizado **apenas** nos casos nos quais deseja-se executar operações que possuam retornos irrelevantes. Essa característica é geralmente atribuída as chamadas **insert**, **update** e **delete**. Ao utilizar o método, o desenvolvedor deve-se manter atento aos seguintes detalhes:
 
 1. Após a execução do método, a conexão utilizada será liberada automaticamente.
-2. O número de chamadas ao banco de dados difere, dependendo de como a invocação do método for realizada. Como pose-se notar nos mapeamentos anexados, ao executar o método sem inferir parâmetros, será realizada apenas uma chamada TCP ao serviço de banco de dados(ignorando a autenticação). Entretanto, ao atribuir parâmetros, serão realizadas 3 chamadas TCP.
+2. Assim como no método `Query`, o número de chamadas ao banco de dados difere, dependendo de como a invocação do método for realizada. Como pode-se notar nos mapeamentos anexados, ao executar o método sem inferir parâmetros, será realizada apenas uma chamada TCP ao serviço de banco de dados(ignorando a autenticação). Entretanto, ao atribuir parâmetros, serão realizadas 3 chamadas TCP. Nota-se que ao parametrizar uma chamada, por baixo dos panos, será gerado um _prepared statement_.
 
 **Mapeamento EXEC com parâmetros:**
+
 ![Mapeamento EXEC com parâmetros](mapeamento-exec-com-params.webp "Mapeamento EXEC com parâmetros")
 
 **Mapeamento EXEC sem parâmetros:**
+
 ![Mapeamento EXEC sem parâmetros](mapeamento-exec-sem-params.webp "Mapeamento EXEC sem parâmetros")
 
 **Sintaxe do comando:**
 ```
-  stm, _ := db.Exec("insert into items(Col1, Col2, Col3)...”, PARÂMETROS)
+result, err := db.Exec("insert into items(Col1, Col2, Col3)...”, PARÂMETROS)
 ```
 
 ### Prepare
-O método `Prepare` deve ser utilizado **apenas** nos casos nos quais deseja-se executar o mesmo statement N vezes durante o ciclo de vida do programa. Ao usar essa funcionalidade, deve-se manter atento aos seguintes detalhes:
+O método `Prepare` deve ser utilizado **apenas** nos casos nos quais deseja-se executar o mesmo statement _N_ vezes durante o ciclo de vida do programa. Ao usar essa funcionalidade, o programador deve-se atentar aos seguintes detalhes:
 
 1. A partir do ponto que o _prepared statement_ não for mais necessário, o próprio deve ser finalizado. Para isso, o método `Close()`, contido no próprio statement deve ser executado. Caso contrário, os recursos alocados para seu funcionamento não serão liberados.
-2. Como pode-se notar no mapeamento, ao invocar a função, serão realizadas duas chamadas TCP para sua execução(ignorando a autenticação).
+2. Como pode-se notar no mapeamento, ao invocar a função, serão realizadas 3 chamadas TCP para sua execução(ignorando a autenticação).
+
+**Mapeamento PREPARE:**
 
 ![Mapeamento PREPARE](mapeamento-prepare.webp "Mapeamento PREPARE")
 
 **Sintaxe do comando:**
 ```
-  stm, _ := db.Prepare("insert into items(Col1, Col2, Col3) values(?, ?, ?)”, “Val1”, "Val2", "Val3")
+stm, err := db.Prepare("insert into items(Col1, Col2, Col3) values(?, ?, ?)”, “Val1”, "Val2", "Val3")
 ```
