@@ -13,10 +13,10 @@ O método `Exec` deve ser utilizado **apenas** nos casos nos quais deseja-se exe
 2. O número de chamadas ao banco de dados difere, dependendo de como a invocação do método for realizada. Como pose-se notar nos mapeamentos anexados, ao executar o método sem inferir parâmetros, será realizada apenas uma chamada TCP ao serviço de banco de dados(ignorando a autenticação). Entretanto, ao atribuir parâmetros, serão realizadas 3 chamadas TCP.
 
 **Mapeamento EXEC com parâmetros:**
-![Mapeamento EXEC com parâmetros](mapeamento-exec-com-params "Mapeamento EXEC com parâmetros")
+![Mapeamento EXEC com parâmetros](mapeamento-exec-com-params.webp "Mapeamento EXEC com parâmetros")
 
 **Mapeamento EXEC sem parâmetros:**
-![Mapeamento EXEC sem parâmetros](mapeamento-exec-sem-params "Mapeamento EXEC sem parâmetros")
+![Mapeamento EXEC sem parâmetros](mapeamento-exec-sem-params.webp "Mapeamento EXEC sem parâmetros")
 
 **Sintaxe do comando:**
 ```
