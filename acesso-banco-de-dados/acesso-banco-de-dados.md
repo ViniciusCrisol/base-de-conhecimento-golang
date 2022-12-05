@@ -54,7 +54,7 @@ result, err := db.Exec("insert into items(Col1, Col2, Col3)...”, PARÂMETROS)
 ```
 
 ### Prepare
-O método `Prepare` deve ser utilizado **apenas** nos casos nos quais deseja-se executar o mesmo statement _N_ vezes durante o ciclo de vida do programa. Ao usar essa funcionalidade, o programador deve-se atentar aos seguintes detalhes:
+O método `Prepare` deve ser utilizado **apenas** nos casos nos quais deseja-se executar o mesmo statement **N** vezes durante o ciclo de vida do programa. Ao usar essa funcionalidade, o programador deve-se atentar aos seguintes detalhes:
 
 1. A partir do ponto que o _prepared statement_ não for mais necessário, o próprio deve ser finalizado. Para isso, o método `Close()`, contido no próprio statement deve ser executado. Caso contrário, os recursos alocados para seu funcionamento não serão liberados.
 2. Como pode-se notar no mapeamento, ao invocar a função, serão realizadas 3 chamadas TCP para sua execução(ignorando a autenticação).
