@@ -19,7 +19,7 @@ func worker() {
         }
         wg.Add(len(msgs))
 
-        for _, msg := range msgs {
+        for _, m := range msgs {
             go func(m *sqs.Message) {
                 defer wg.Done()
                 // TODO
