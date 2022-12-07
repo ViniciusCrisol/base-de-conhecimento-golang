@@ -65,5 +65,6 @@ O método `Prepare` deve ser utilizado **apenas** nos casos nos quais deseja-se 
 
 **Sintaxe do comando:**
 ```
-stm, err := db.Prepare("insert into items(Col1, Col2, Col3) values(?, ?, ?)”, “Val1”, "Val2", "Val3")
+stm, err := db.Prepare("insert into items(Col1, Col2, Col3) values(?, ?, ?)")
+result, err := stm.Exec("Val1", "Val2", "Val3")
 ```
