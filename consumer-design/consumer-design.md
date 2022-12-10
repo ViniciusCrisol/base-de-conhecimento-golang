@@ -24,7 +24,7 @@ func worker() {
                 defer wg.Done()
                 // TODO
                 deleteSQSMsg(m)
-            }(m)
+            }(msg)
         }
         wg.Wait()
     }
