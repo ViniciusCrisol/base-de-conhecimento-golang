@@ -4,11 +4,10 @@ A linguagem Go, através da biblioteca nativa `database/sql`, fornece diversos r
 ## DB e Conn
 Este bloco visa esclarecer as principais diferenças entre os objetos `sql.DB` e `sql.Conn`, providos pela API a fim de abstrair o acesso aos serviços de banco de dados. Parte do conteúdo foi extraído e traduzido do artigo [The DB Connection Confusion in Go](https://aloksinhanov.medium.com/the-db-connection-confusion-in-go-d48574c399c5 "The DB Connection Confusion in Go").
 
-### DB
-O objeto `sql.DB` deve ser utilizado na maioria das vezes nas quais deseja-se realizar conexões com serviços de banco de dados. Como pode-se notar na própria [documentação da linguagem](https://go.dev/doc/database/manage-connections "documentação da linguagem"), o uso da funcionalidade é amplamente recomentado. Abaixo estão listadas algumas das principais características providas pelo seu uso:
+O objeto `sql.DB` deve ser utilizado na maioria das vezes nas quais deseja-se realizar conexões com serviços de banco de dados. Como pode-se notar na própria [documentação da linguagem](https://go.dev/doc/database/manage-connections "documentação da linguagem"), o uso da API é amplamente recomentado. Abaixo estão listadas algumas das principais características que justificam seu uso em relação ao `sql.Conn`:
 
-1. Por baixo dos panos, o objeto representa uma _connection pool_. Dessa maneira, para cada ação disparada no `sql.DB`, uma conexão é resgada, utilizada e devolvida. Assim, otimizando o sistema de acesso ao banco.
-2. O sistema provê um mecanismo de recuperação automática nos casos de falha. Dessa maneira, caso haja problemas de conexão durante a execução de um processo, será automaticamente escolhida outra conexão para rodar o comado. Deve-se reforçar que essa trativa ocorrerá no máximo 10 vezes, assim, impedindo que o programa trave.
+1. Por baixo dos panos, o objeto `sql.DB` representa uma _connection pool_. Dessa maneira, para cada ação disparada no `sql.DB`, uma conexão é resgada, utilizada e devolvida. Assim, otimizando o sistema de acesso ao banco, garantindo mais segurança e desempenho às consultas SQL.
+2. A API `sql.DB` provê um mecanismo de recuperação automática nos casos de falha. Ou seja, caso hajam problemas de conexão durante a execução de um processo **X**, será automaticamente escolhida uma segunda conexão para a execução da demanda. Deve-se reforçar que essa trativa ocorrerá no máximo 10 vezes, assim garantindo a integridade do programa.
 
 ## Query, Exec e Prepare
 Essa seção visa sanar alguns questionamentos relacionadas ao uso dos métodos de consulta/manipulação mais comuns da API. Com fins ilustrativos, imagens que demonstram as chamadas realizadas por baixo dos panos serão exibidas.

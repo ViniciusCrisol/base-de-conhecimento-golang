@@ -13,7 +13,7 @@ func workerpool() {
 func worker() {
     wg := sync.WaitGroup{}
     for {
-        msgs, _ := getSQSMsgs()
+        msgs, err := getSQSMsgs()
         if err != nil {
             // TODO
         }
